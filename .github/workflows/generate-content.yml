@@ -1,0 +1,33 @@
+name: Generate content
+on:
+  repository_dispatch:
+    types: [generate-content]
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: Existing ai_generation_job UUID
+        required: true
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    concurrency:
+      group: generate-${{ github.event.client_payload.job_id || inputs.job_id }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/generate-content.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          JOB_ID: ${{ github.event.client_payload.job_id || inputs.job_id }}
+          GITHUB_RUN_ID: ${{ github.run_id }}

@@ -1,0 +1,3 @@
+-- Opsional: setelah migration dan admin tersedia, tambahkan soal uji yang ditinjau manual.
+-- Ganti teks dan pembahasan dengan konten yang telah diverifikasi sebelum publikasi.
+-- Tidak ada seed soal faktual bawaan agar tidak menyajikan klaim CPNS yang belum diverifikasi.
